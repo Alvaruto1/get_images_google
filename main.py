@@ -31,35 +31,40 @@ class DownloadImagesGoogle:
         options = Options()
         options.add_argument('--headless')
         # options.add_argument("--start-maximized");
-        self.driver = webdriver.Chrome(options=options)
-        #self.driver = webdriver.Chrome(ChromeDriverManager().install())
+        #self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Chrome(ChromeDriverManager().install())
         self.SLEEPS = [2, 1, 1.5, 1.2]
         self.SLEEPS_2 = [5.7, 6.1, 5.8, 6.2, 5.7, 6.1, 6.2, 6.3]
 
     def _scroll_down_page(self):
         page_scroll_sleep = 2
         # get height page
-        last_height = self.driver.execute_script("return document.body.scrollHeight")
+        last_height = self.driver.execute_script(
+            "return document.body.scrollHeight")
 
         print("-" * 50)
         print("Scrolling dynamic ...")
         print("-" * 50)
         while True:
-            self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            self.driver.execute_script(
+                "window.scrollTo(0, document.body.scrollHeight);")
             # wait to load page
             time.sleep(page_scroll_sleep)
-            new_height = self.driver.execute_script("return document.body.scrollHeight")
+            new_height = self.driver.execute_script(
+                "return document.body.scrollHeight")
 
             if new_height == last_height:
                 try:
-                    button_more_show_results = self.driver.find_elements_by_class_name("r0zKGf")
+                    button_more_show_results = self.driver.find_elements_by_class_name(
+                        "r0zKGf")
                     WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(
                         (By.CLASS_NAME,
                          "r0zKGf")))
                     button_more_show_results[0].click()
                 except:
                     try:
-                        button_more_show_results = self.driver.find_elements_by_class_name("mye4qd")
+                        button_more_show_results = self.driver.find_elements_by_class_name(
+                            "mye4qd")
                         WebDriverWait(self.driver, 3).until(EC.element_to_be_clickable(
                             (By.CLASS_NAME,
                              "mye4qd")))
@@ -82,10 +87,10 @@ class DownloadImagesGoogle:
         self.driver.get(page)
 
         # get element html input search
-        input_search = self.driver.find_element_by_xpath(
-            "/html/body/div[2]/div[2]/div[2]/form/div[1]/div[1]/div[1]/div/div[2]/input")
+        input_search = self.driver.find_element(
+            by=By.XPATH, value="/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input")
         button_search = self.driver.find_element_by_xpath(
-            "/html/body/div[2]/div[2]/div[2]/form/div[1]/div[1]/div[1]/button")
+            "/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/button")
         # send text to input
         input_search.send_keys(search_text)
         button_search.click()
@@ -93,12 +98,14 @@ class DownloadImagesGoogle:
         if not copyright:
             print("No copyright images")
             # get element html tab tools
-            tab_tools = self.driver.find_element_by_xpath("/html/body/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]/div/div")
+            tab_tools = self.driver.find_element_by_xpath(
+                "/html/body/div[2]/c-wiz/div[1]/div/div[1]/div[2]/div[2]")
             tab_tools.click()
 
             # get element html tab copy right
             tab_copy_right = self.driver.find_element_by_xpath(
-                "/html/body/div[2]/c-wiz/div[2]/c-wiz[1]/div/div/div[1]/div/div[5]")
+                "/html/body/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[1]/div/div[5]/div"
+            )
             # wait while is clickable tab_copy_right
             state = True
             while state:
@@ -113,7 +120,7 @@ class DownloadImagesGoogle:
 
             # get element html option licenses creative commons
             option_licenses_creative_commons = self.driver.find_element_by_xpath(
-                "/html/body/div[2]/c-wiz/div[2]/c-wiz[1]/div/div/div[3]/div/a[1]")
+                "/html/body/div[2]/c-wiz/div[2]/div[2]/c-wiz[1]/div/div/div[3]/div/a[2]")
             option_licenses_creative_commons.click()
         else:
             print("With copyright images")
@@ -122,7 +129,8 @@ class DownloadImagesGoogle:
 
         # get element div items images
         list_items_images = self.driver.find_elements_by_class_name("wXeWr")
-        list_items_images_references = self.driver.find_elements_by_class_name("VFACy")
+        list_items_images_references = self.driver.find_elements_by_class_name(
+            "VFACy")
 
         list_info_image = []
 
@@ -143,11 +151,13 @@ class DownloadImagesGoogle:
             image_element = child_item_image.find_element_by_class_name("rg_i")
 
             description = image_element.get_attribute("alt").replace("|", '')
-            url_reference = child_item_image_reference.get_attribute("href").replace("|", '')
+            url_reference = child_item_image_reference.get_attribute(
+                "href").replace("|", '')
             location = child_item_image.location
             x_position = location['x']
             y_position = location['y']
-            self.driver.execute_script(f"window.scrollTo({x_position}, {y_position});")
+            self.driver.execute_script(
+                f"window.scrollTo({x_position}, {y_position});")
             try:
                 child_item_image.click()
             except:
@@ -157,9 +167,11 @@ class DownloadImagesGoogle:
             # Google image web site logic
             try:
                 if count == 0:
-                    image = image_container[0].find_element_by_class_name('n3VNCb')
+                    image = image_container[0].find_element_by_class_name(
+                        'n3VNCb')
                 else:
-                    image = image_container[1].find_element_by_class_name('n3VNCb')
+                    image = image_container[1].find_element_by_class_name(
+                        'n3VNCb')
             except:
                 continue
 
@@ -168,7 +180,6 @@ class DownloadImagesGoogle:
             time.sleep(np.random.choice(self.SLEEPS_2))
 
             url_image = image.get_attribute('src').replace('|', '')
-
 
             # verification about image link
             if not ((url_image.find("encrypted-tbn0") < 0) and (url_image.find("http") >= 0)):
@@ -206,7 +217,7 @@ class DownloadImagesGoogle:
         path = f"{path}/{search_text}"
         print(f"Creating folder {search_text}")
         print("-" * 50)
-        os.mkdir(path)
+        os.makedirs(path)
         print("-" * 50)
         print(f"Created folder {search_text}")
         print("-" * 50)
@@ -237,18 +248,21 @@ class DownloadImagesGoogle:
                     number_download_bad += 1
                     break
                 time.sleep(np.random.choice(self.SLEEPS))
-                state = self._download_image(image['url_image'], f"{path}/{i}. {image['description'].replace('.', '')[:50]}.jpeg")
+                state = self._download_image(
+                    image['url_image'], f"{path}/{i}. {image['description'].replace('.', '')[:50]}.jpeg")
                 #print(f"entra {count_aux}")
                 count_aux -= 1
 
         print(f"Images download bad: {number_download_bad}")
-        print(f"Images download ok: {len(list_info_image) - number_download_bad}")
+        print(
+            f"Images download ok: {len(list_info_image) - number_download_bad}")
         print("Images download correctly")
         print("-" * 50)
 
     def _download_image(self, url_image, path_image):
         try:
-            request_help = urllib.request.Request(url=url_image, headers={'User-Agent': 'Mozilla/5.0'})
+            request_help = urllib.request.Request(
+                url=url_image, headers={'User-Agent': 'Mozilla/5.0'})
             request = urllib.request.urlopen(request_help, timeout=5)
             with open(path_image, 'wb') as f:
                 try:
@@ -263,18 +277,24 @@ class DownloadImagesGoogle:
 
     def routine_multiple(self, page, list_search_texts, path=".", limit=0, copyright=False):
         for search_text in list_search_texts:
-            self.routine_simple(page, search_text, path=path, limit=limit, copyright=copyright)
+            self.routine_simple(page, search_text, path=path,
+                                limit=limit, copyright=copyright)
 
     def __del__(self):
         self.driver.close()
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-page", "-p", type=str, help="page google images in where to search")
-parser.add_argument("-path_saved", "-d", type=str, help="page google images in where to search")
-parser.add_argument("-list_searching_texts", "-s", nargs="+", help="texts to search in google images")
-parser.add_argument("-limit", "-l", type=int, help="limit download images", default=0)
-parser.add_argument("-copyright", "-c", help="With this option the images has copyright", action="store_true", default=True)
+parser.add_argument("-page", "-p", type=str,
+                    help="page google images in where to search")
+parser.add_argument("-path_saved", "-d", type=str,
+                    help="page google images in where to search")
+parser.add_argument("-list_searching_texts", "-s", nargs="+",
+                    help="texts to search in google images")
+parser.add_argument("-limit", "-l", type=int,
+                    help="limit download images", default=0)
+parser.add_argument("-copyright", "-c", help="With this option the images has copyright",
+                    action="store_true", default=True)
 
 args = parser.parse_args()
 
@@ -286,11 +306,11 @@ limit_images = args.limit
 
 
 download_google_images = DownloadImagesGoogle()
-download_google_images.routine_multiple(page=page_google, list_search_texts=list_searching_texts, path=path_saved, limit=limit_images, copyright=copyright_option)
+download_google_images.routine_multiple(
+    page=page_google, list_search_texts=list_searching_texts, path=path_saved, limit=limit_images, copyright=copyright_option)
 
 
-#download_google_images.routine(page="https://www.google.com.co/imghp?hl=es-419&authuser=0&ogbl",
+# download_google_images.routine(page="https://www.google.com.co/imghp?hl=es-419&authuser=0&ogbl",
 #                                   search_text="conflicto armado", path="./images")
 
 #  python main.py -p "https://www.google.com.co/imghp?hl=es-419&authuser=0&ogbl" -d ./images -s "conflicto armado en colombia" -l 5 -c
-
